@@ -20,6 +20,8 @@ import com.myfirst.restdemo.adapters.ReposAdapter;
 import com.myfirst.restdemo.rest.API;
 import com.myfirst.restdemo.rest.GithubConfig;
 import com.myfirst.restdemo.rest.models.Repo;
+import com.myfirst.restdemo.rest.requests.ProjectRequest;
+import com.myfirst.restdemo.rest.responses.ProjectResponse;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -118,18 +120,58 @@ public class MainActivity extends AppCompatActivity {
     public void onGetReposClick(View view) {
         String userName = etUserName.getText().toString();
 
+        if (userName.isEmpty()) return;
+
+//        API.github().listReposTest(userName).enqueue(new Callback<ResponseBody>() {
+//            @Override
+//            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+//                try {
+//                    String jsonString = response.body().string();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<ResponseBody> call, Throwable t) {
+//
+//            }
+//        });
+
         API.github().listRepos(userName).enqueue(new Callback<ArrayList<Repo>>() {
             @Override
             public void onResponse(Call<ArrayList<Repo>> call, Response<ArrayList<Repo>> response) {
                 ArrayList repos = response.body();
                 adapter.resetRepos(repos);
 
-                Log.i(TAG, "<-- " + call.request().method() + " " + call.request().url());
+                Log.i(TAG, "<-- " + response.code() + " " + call.request().method() + " " + call.request().url());
                 if (repos != null) Log.i(TAG, repos.toString());
             }
 
             @Override
             public void onFailure(Call<ArrayList<Repo>> call, Throwable t) {
+                Log.e(TAG, t.toString());
+                Snackbar snackbar = Snackbar.make(tvResponse, t.toString(), Snackbar.LENGTH_INDEFINITE);
+                snackbar.setAction(android.R.string.ok, v -> snackbar.dismiss());
+                snackbar.show();
+            }
+        });
+    }
+
+    public void onCreateProjectClick(View view) {
+        ProjectRequest request = new ProjectRequest("Some name", null);
+        API.github().createProject(request).enqueue(new Callback<ProjectResponse>() {
+            @Override
+            public void onResponse(Call<ProjectResponse> call, Response<ProjectResponse> response) {
+                ProjectResponse project = response.body();
+                // some actions
+
+                Log.i(TAG, "<-- " + response.code() + " " + call.request().method() + " " + call.request().url());
+                if (project != null) Log.i(TAG, project.toString());
+            }
+
+            @Override
+            public void onFailure(Call<ProjectResponse> call, Throwable t) {
                 Log.e(TAG, t.toString());
                 Snackbar snackbar = Snackbar.make(tvResponse, t.toString(), Snackbar.LENGTH_INDEFINITE);
                 snackbar.setAction(android.R.string.ok, v -> snackbar.dismiss());
