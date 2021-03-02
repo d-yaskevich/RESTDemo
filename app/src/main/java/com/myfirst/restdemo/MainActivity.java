@@ -39,8 +39,6 @@ import javax.net.ssl.HttpsURLConnection;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.myfirst.restdemo.rest.GithubConfig.GITHUB_API_BASE_URL;
 
@@ -62,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
 
         tvResponse = (TextView) findViewById(R.id.tv_response);
         etUserName = findViewById(R.id.et_user_name);
-        et_delete_user = findViewById(R.id.et_delete_user);
 
         adapter = new ReposAdapter(this);
 
@@ -70,12 +67,12 @@ public class MainActivity extends AppCompatActivity {
         rvReps.setLayoutManager(new LinearLayoutManager(this));
         rvReps.setAdapter(adapter);
 
-        Gson gson = new GsonBuilder().serializeNulls().create();
+        /*Gson gson = new GsonBuilder().serializeNulls().create();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(GITHUB_API_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
-        githubService = retrofit.create(GithubService.class);
+        githubService = retrofit.create(GithubService.class);*/
 
     }
 
@@ -186,20 +183,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void onDeleteClick(View view) {
-        String userName = et_delete_user.getText().toString();
-        Call<Void> call = githubService.deleteRepo(userName);
-        call.enqueue(new Callback<Void>() {
+    public void deletePost(View view) {
+        //DeleteProject request = new DeleteProject(1);
+        String owner = "AnnaTestREST";
+        String repo = "Test";
+        API.github().deleteRepo(owner, repo).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                tvResponse.setText("Code: " + response.code());
-                Log.d("DELETE", "Code: " + response.code());
+                tvResponse.setText("Code: " + response.code()+ "\n message = " + response.message()
+                + "\n to string =" +response.toString());
+                // some actions
+
+                Log.i(TAG, "<-- " + response.code() + " " + call.request().method() + " " + call.request().url());
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                tvResponse.setText(t.getMessage());
-                Log.d("DELETE", "onFailure: " + t.getMessage());
+                Log.e(TAG, t.toString());
+                Snackbar snackbar = Snackbar.make(tvResponse, t.toString(), Snackbar.LENGTH_INDEFINITE);
+                snackbar.setAction(android.R.string.ok, v -> snackbar.dismiss());
+                snackbar.show();
             }
         });
     }

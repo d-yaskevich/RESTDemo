@@ -18,9 +18,6 @@ import static com.myfirst.restdemo.rest.GithubConfig.GITHUB_API_REPOS;
 
 public interface GithubService {
 
-//    @GET(GITHUB_API_REPOS)
-//    Call<ResponseBody> listReposTest(@Path("user") String user);
-
     @GET(GITHUB_API_REPOS)
     Call<ArrayList<Repo>> listRepos(@Path("user") String user);
 
@@ -30,16 +27,8 @@ public interface GithubService {
 
     //todo add one function for each request method: POST, PUT, DELETE from https://docs.github.com/en/rest/overview/endpoints-available-for-github-apps
 
-
-    /*@PUT("users/{name}")
-    Call<Repo> putRepo(@Path("name") String name, @Body Repo post);
-
-    @POST(GITHUB_API_REPOS)
-    Call<Repo> createRepo(@Body Repo repo);
-     */
-
-    @DELETE("GITHUB_API_REPOS")
-    Call<Void> deleteRepo(@Path("user") String user);
+    @DELETE("/repos/{owner}/{repo}")
+    Call<Void> deleteRepo(@Path("owner") String owner, @Path("repo") String repo );
 
 
 
