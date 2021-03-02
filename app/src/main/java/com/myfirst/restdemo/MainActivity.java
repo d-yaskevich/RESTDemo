@@ -16,10 +16,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.myfirst.restdemo.adapters.ReposAdapter;
 import com.myfirst.restdemo.rest.API;
 import com.myfirst.restdemo.rest.GithubConfig;
+import com.myfirst.restdemo.rest.GithubService;
 import com.myfirst.restdemo.rest.models.Repo;
+import com.myfirst.restdemo.rest.responses.GithubResponse;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,6 +38,10 @@ import javax.net.ssl.HttpsURLConnection;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+import static com.myfirst.restdemo.rest.GithubConfig.GITHUB_API_BASE_URL;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView tvResponse;
     private EditText etUserName;
+    private EditText et_delete_user;
+    private GithubService githubService;
 
     private ReposAdapter adapter;
 
@@ -51,25 +61,43 @@ public class MainActivity extends AppCompatActivity {
 
         tvResponse = (TextView) findViewById(R.id.tv_response);
         etUserName = findViewById(R.id.et_user_name);
+        et_delete_user = findViewById(R.id.et_delete_user);
 
         adapter = new ReposAdapter(this);
 
         RecyclerView rvReps = findViewById(R.id.rv_repos);
         rvReps.setLayoutManager(new LinearLayoutManager(this));
         rvReps.setAdapter(adapter);
+
+        Gson gson = new GsonBuilder().serializeNulls().create();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(GITHUB_API_BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+        githubService = retrofit.create(GithubService.class);
+
     }
 
     public void onGetClick(View view) {
         AsyncTask.execute(() -> {
-            String response = getDataFrom(GithubConfig.GITHUB_API_BASE_URL);
-
+            String response = getDataFrom(GITHUB_API_BASE_URL);
+            Log.d(TAG, "response" + response);
             //todo add convert String to GithubResponse model using JSON (Gson)
+            GithubResponse githubResponse = fromGson(response);
 
             new Handler(Looper.getMainLooper()).post(() ->
                     //todo show 'nice' (formatted) contents GithubResponse model
-                    tvResponse.setText(response)
+                    //tvResponse.setText(response)
+                    tvResponse.setText(githubResponse.toString())
             );
         });
+    }
+
+    public static GithubResponse fromGson(String response) {
+        GsonBuilder builder = new GsonBuilder();
+
+        Gson gson = builder.create();
+        return gson.fromJson(response, GithubResponse.class);
     }
 
     private String getDataFrom(String urlString) {
@@ -136,5 +164,23 @@ public class MainActivity extends AppCompatActivity {
                 snackbar.show();
             }
         });
+    }
+
+    public void onDeleteClick(View view) {
+        String userName = et_delete_user.getText().toString();
+        Call<Void> call = githubService.deleteRepo(userName);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                tvResponse.setText("Code: " + response.code());
+                Log.d("DELETE", "Code: " + response.code());
+            }
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                tvResponse.setText(t.getMessage());
+                Log.d("DELETE", "onFailure: " + t.getMessage());
+            }
+        });
+
     }
 }
