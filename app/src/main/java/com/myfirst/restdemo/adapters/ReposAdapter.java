@@ -30,6 +30,14 @@ public class ReposAdapter extends RecyclerView.Adapter<ReposAdapter.RepoVH> {
         notifyDataSetChanged();
     }
 
+    public void notifyRepos(Repo repos) {
+        this.repos.clear();
+        if (repos != null) {
+            this.repos.add(repos);
+        }
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public RepoVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

@@ -21,7 +21,7 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nsv_response"
         android:layout_width="0dp"
-        android:layout_height="150dp"
+        android:layout_height="80dp"
         android:background="@color/teal_200"
 
         app:layout_constraintLeft_toLeftOf="parent"
@@ -34,6 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="16dp"
+            android:textSize="12sp"
             tools:text="Hello World!" />
 
     </androidx.core.widget.NestedScrollView>
@@ -66,10 +67,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_get_repos" />
+        app:layout_constraintTop_toBottomOf="@id/btn_get_repos"
+        app:layout_constraintVertical_bias="0.09" />
 
     <Button
         android:id="@+id/btn_create_project"
@@ -83,5 +84,49 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/rv_repos" />
+
+    <Button
+        android:id="@+id/btn_delete"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:onClick="deletePost"
+        android:text="Delete"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_create_project" />
+
+    <Button
+        android:id="@+id/btn_topic"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:onClick="onTopicClick"
+        android:text="TOPIC"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_delete" />
+
+    <Button
+        android:id="@+id/btn_Collaboration"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:onClick="onPutCollaborationClick"
+        android:text="Collaboration"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_topic" />
+
+    <Button
+        android:id="@+id/btn_vulnerability_alerts"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:onClick="onPutVulnerabilityAlertsClick"
+        android:text="Vulnerability Alerts"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_Collaboration" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
